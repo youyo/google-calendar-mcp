@@ -57,5 +57,7 @@ pythonpath = ["src"]
 [tool.setuptools.package-dir]
 google_calendar_mcp = "src/google_calendar_mcp"
 
+[tool.setuptools.packages.find]
+where = ["src"]
 [tool.setuptools_scm]
 write_to = "src/google_calendar_mcp/_version.py"
