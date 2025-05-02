@@ -18,6 +18,9 @@ dependencies = [
     "google-auth",
 ]
 
+[project.scripts]
+google-calendar-mcp = "google_calendar_mcp.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest",
@@ -52,7 +55,7 @@ python_functions = "test_*"
 pythonpath = ["src"]
 
 [tool.setuptools.package-dir]
-google-calendar-mcp = "src/tools"
+google_calendar_mcp = "src/google_calendar_mcp"
 
 [tool.setuptools_scm]
-write_to = "src/tools/_version.py"
+write_to = "src/google_calendar_mcp/_version.py"

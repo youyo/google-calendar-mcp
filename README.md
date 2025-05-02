@@ -43,11 +43,29 @@ uv pip install -r requirements.txt
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
+### Example: MCP configuration file
+
+To use this server with an MCP client, add the following to your MCP configuration file:
+
+```json
+{
+  "mcpServers": {
+    "google-calendar-mcp": {
+      "command": "uvx",
+      "args": ["google-calendar-mcp@latest"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json"
+      }
+    }
+  }
+}
+```
+
 ## Usage
 
 ```bash
 # Start the server
-python -m src.main
+uvx google-calendar-mcp
 ```
 
 ## Available Tools

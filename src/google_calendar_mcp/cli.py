@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Google Calendar MCP Server with Service Account authentication
+Google Calendar MCP CLI entry point
 """
 
 import asyncio
 import logging
 import os
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -22,7 +22,7 @@ from modelcontextprotocol.types import (
     Tool,
 )
 
-from tools.calendar_tools import (
+from .calendar_tools import (
     create_event,
     delete_event,
     list_calendars,
@@ -32,7 +32,6 @@ from tools.calendar_tools import (
     update_event,
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -45,7 +44,6 @@ class GoogleCalendarMCPServer:
     """Google Calendar MCP Server implementation using Service Account authentication"""
 
     def __init__(self) -> None:
-        """Initialize the MCP server and Google Calendar service"""
         self.server = Server(
             name="google-calendar",
             version="1.0.0",
@@ -54,9 +52,7 @@ class GoogleCalendarMCPServer:
         self.calendar_service = None
 
     async def initialize(self) -> bool:
-        """Initialize the Google Calendar service with Service Account authentication"""
         try:
-            # Get the path to the service account JSON file from environment variable
             credentials_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
             if not credentials_path:
                 logger.error(
@@ -65,13 +61,10 @@ class GoogleCalendarMCPServer:
                 )
                 return False
 
-            # Create credentials from the service account file
             credentials = service_account.Credentials.from_service_account_file(
                 credentials_path,
                 scopes=["https://www.googleapis.com/auth/calendar"],
             )
-
-            # Build the Google Calendar service
             self.calendar_service = build("calendar", "v3", credentials=credentials)
             logger.info("Successfully initialized Google Calendar service")
             return True
@@ -80,13 +73,9 @@ class GoogleCalendarMCPServer:
             return False
 
     def register_handlers(self) -> None:
-        """Register request handlers for the MCP server"""
-        # Register the ListTools handler
         self.server.set_request_handler(
             ListToolsRequest, self.handle_list_tools_request
         )
-
-        # Register the CallTool handler
         self.server.set_request_handler(
             CallToolRequest, self.handle_call_tool_request
         )
@@ -94,7 +83,6 @@ class GoogleCalendarMCPServer:
     async def handle_list_tools_request(
         self, _: ListToolsRequest
     ) -> ListToolsResponse:
-        """Handle ListTools request by returning the list of available tools"""
         tools = [
             Tool(
                 name="list-calendars",
@@ -282,7 +270,6 @@ class GoogleCalendarMCPServer:
     async def handle_call_tool_request(
         self, request: CallToolRequest
     ) -> CallToolResponse:
-        """Handle CallTool request by executing the requested tool"""
         if not self.calendar_service:
             return CallToolResponse(
                 content=[
@@ -341,30 +328,20 @@ class GoogleCalendarMCPServer:
             )
 
     async def start(self) -> None:
-        """Start the MCP server"""
-        # Initialize the Google Calendar service
         if not await self.initialize():
             logger.error("Failed to initialize. Exiting.")
             return
 
-        # Register request handlers
         self.register_handlers()
-
-        # Connect to the transport
         transport = StdioServerTransport()
         await self.server.connect(transport)
         logger.info("Server started and connected to transport")
 
 
-async def main() -> None:
-    """Main entry point for the MCP server"""
-    server = GoogleCalendarMCPServer()
-    await server.start()
-
-
-if __name__ == "__main__":
+def main() -> None:
+    """Entry point for uvx google-calendar-mcp"""
     try:
-        asyncio.run(main())
+        asyncio.run(GoogleCalendarMCPServer().start())
     except KeyboardInterrupt:
         logger.info("Server stopped by user")
     except Exception as e:
