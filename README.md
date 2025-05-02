@@ -43,9 +43,18 @@ uv pip install -r requirements.txt
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
+Optionally, you can set the default calendar ID via the environment variable:
+
+```bash
+export GOOGLE_CALENDAR_ID=your-calendar-id@example.com
+```
+
+If not specified in arguments, this value will be used as the default calendarId.
+
 ### Example: MCP configuration file
 
-To use this server with an MCP client, add the following to your MCP configuration file:
+To use this server with an MCP client, add the following to your MCP configuration file.
+Set both `GOOGLE_APPLICATION_CREDENTIALS` and `GOOGLE_CALENDAR_ID` in the `env` section to specify authentication and the default calendar:
 
 ```json
 {
@@ -54,12 +63,15 @@ To use this server with an MCP client, add the following to your MCP configurati
       "command": "uvx",
       "args": ["google-calendar-mcp@latest"],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json"
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json",
+        "GOOGLE_CALENDAR_ID": "your-calendar-id@example.com"
       }
     }
   }
 }
 ```
+
+If `calendarId` is not specified in tool arguments, the value of `GOOGLE_CALENDAR_ID` will be used as the default.
 
 ## Usage
 
@@ -77,6 +89,26 @@ uvx google-calendar-mcp
 - `create-event`: Create a new calendar event
 - `update-event`: Update an existing calendar event
 - `delete-event`: Delete a calendar event
+
+### Tool Required Arguments
+
+| Tool           | Required Arguments  | Optional Arguments / Notes                                      |
+| -------------- | ------------------- | --------------------------------------------------------------- |
+| list-calendars | (none)              | -                                                               |
+| list-events    | calendarId          | timeMin, timeMax, maxResults                                    |
+| search-events  | calendarId, query   | timeMin, timeMax, maxResults                                    |
+| list-colors    | (none)              | -                                                               |
+| create-event   | calendarId, summary | start, end, timeZone, location, description, attendees, etc.    |
+| update-event   | calendarId, eventId | summary, start, end, timeZone (dateTime 時必須), location, etc. |
+| delete-event   | calendarId, eventId | -                                                               |
+
+#### Notes
+
+- `calendarId` はほぼ全てのカレンダー操作で必須です。
+- `eventId` はイベント更新・削除時に必須です。
+- `summary` はイベント作成時に必須です。
+- `timeZone` は start/end が dateTime 形式の場合に必須です。
+- その他のパラメータは Google Calendar API の仕様に準じます。
 
 ## License
 

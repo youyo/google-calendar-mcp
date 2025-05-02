@@ -43,9 +43,18 @@ uv pip install -r requirements.txt
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
+任意で、デフォルトのカレンダー ID を環境変数で指定できます。
+
+```bash
+export GOOGLE_CALENDAR_ID=your-calendar-id@example.com
+```
+
+引数で calendarId が指定されていない場合、この値がデフォルトとして利用されます。
+
 ### 例: MCP 設定ファイル
 
-MCP クライアントでこのサーバーを利用する場合、MCP 設定ファイルに以下のように記載してください。
+MCP クライアントでこのサーバーを利用する場合、MCP 設定ファイルの `env` セクションに
+`GOOGLE_APPLICATION_CREDENTIALS` と `GOOGLE_CALENDAR_ID` の両方を指定してください。
 
 ```json
 {
@@ -54,12 +63,15 @@ MCP クライアントでこのサーバーを利用する場合、MCP 設定フ
       "command": "uvx",
       "args": ["google-calendar-mcp@latest"],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json"
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json",
+        "GOOGLE_CALENDAR_ID": "your-calendar-id@example.com"
       }
     }
   }
 }
 ```
+
+calendarId がツール引数で指定されていない場合、`GOOGLE_CALENDAR_ID` の値がデフォルトとして利用されます。
 
 ## 使い方
 
