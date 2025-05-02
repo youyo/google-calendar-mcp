@@ -6,6 +6,7 @@ Google Calendar MCP Server entry point
 import asyncio
 import logging
 import os
+import pathlib
 import sys
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
@@ -53,6 +54,9 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
             )
             yield context # 初期化失敗時は None のまま yield
             return
+
+        # パスの先頭が~や相対パスの場合も展開する
+        credentials_path = str(pathlib.Path(credentials_path).expanduser().resolve())
 
         credentials = service_account.Credentials.from_service_account_file(
             credentials_path,
