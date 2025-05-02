@@ -13,13 +13,13 @@ authors = [
     {name = "youyo"}
 ]
 dependencies = [
-    "modelcontextprotocol",
+    "mcp[cli]", # Use the correct package name and include CLI extras
     "google-api-python-client",
     "google-auth",
 ]
 
 [project.scripts]
-google-calendar-mcp = "google_calendar_mcp.cli:main"
+google-calendar-mcp = "google_calendar_mcp.server:main"
 
 [project.optional-dependencies]
 dev = [

@@ -41,3 +41,10 @@
 - MCP Python SDK を利用
 - CI/CD は Astral 公式推奨の GitHub Actions ワークフローを利用
 - TypeScript 資産や不要な CI, Dockerfile 等は追加しない
+
+## pyproject.toml 修正履歴（2025-05-02）
+
+- [project] テーブルに version = "0.1.0" を追加し、PEP 621 仕様に準拠。
+- authors を [{ name = "youyo" }] 形式に修正。
+- license, requires-python, dependencies も PEP 621/TOML 仕様に合わせて整理。
+- これにより Python ビルドツールでのビルドエラーが解消。
