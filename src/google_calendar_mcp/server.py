@@ -55,6 +55,15 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
             yield context # 初期化失敗時は None のまま yield
             return
 
+        calendar_id = os.environ.get("GOOGLE_CALENDAR_ID")
+        if not calendar_id:
+            logger.error(
+                "GOOGLE_CALENDAR_ID environment variable not set. "
+                "Please set it to your Google Calendar ID (e.g., 'example@gmail.com')."
+            )
+            yield context
+            return
+
         # パスの先頭が~や相対パスの場合も展開する
         credentials_path = str(pathlib.Path(credentials_path).expanduser().resolve())
 

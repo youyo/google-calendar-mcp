@@ -12,6 +12,16 @@ from googleapiclient.discovery import Resource
 logger = logging.getLogger("google-calendar-mcp.tools")
 
 
+def get_calendar_id(args: dict) -> str:
+    """
+    カレンダーIDを取得。必須。未指定なら例外。
+    """
+    calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID")
+    if not calendar_id:
+        raise ValueError("GOOGLE_CALENDAR_ID is not set. Please set the environment variable or provide 'calendarId' in args.")
+    return calendar_id
+
+
 async def list_calendars(service: Resource) -> str:
     """
     List all available calendars
@@ -51,7 +61,7 @@ async def list_events(service: Resource, args: Dict[str, Any]) -> str:
         Formatted string with event information
     """
     try:
-        calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID") or "primary"
+        calendar_id = get_calendar_id(args)
         time_min = args.get("timeMin")
         time_max = args.get("timeMax")
         max_results = args.get("maxResults", 10)
@@ -93,7 +103,7 @@ async def search_events(service: Resource, args: Dict[str, Any]) -> str:
         Formatted string with event information
     """
     try:
-        calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID") or "primary"
+        calendar_id = get_calendar_id(args)
         query = args.get("query", "")
         time_min = args.get("timeMin")
         time_max = args.get("timeMax")
@@ -167,7 +177,7 @@ async def create_event(service: Resource, args: Dict[str, Any]) -> str:
         Formatted string with created event information
     """
     try:
-        calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID") or "primary"
+        calendar_id = get_calendar_id(args)
         summary = args.get("summary")
         description = args.get("description")
         start_time = args.get("start")
@@ -219,7 +229,7 @@ async def update_event(service: Resource, args: Dict[str, Any]) -> str:
         Formatted string with updated event information
     """
     try:
-        calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID") or "primary"
+        calendar_id = get_calendar_id(args)
         event_id = args.get("eventId")
         summary = args.get("summary")
         description = args.get("description")
@@ -297,7 +307,7 @@ async def delete_event(service: Resource, args: Dict[str, Any]) -> str:
         Confirmation message
     """
     try:
-        calendar_id = args.get("calendarId") or os.environ.get("GOOGLE_CALENDAR_ID") or "primary"
+        calendar_id = get_calendar_id(args)
         event_id = args.get("eventId")
         
         service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
