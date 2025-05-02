@@ -94,16 +94,12 @@ mcp = FastMCP(
 
 @mcp.tool()
 async def list_calendars_tool(ctx: Context) -> Any:
-    """List all available calendars"""
-    app_context: AppContext = ctx.request_context.lifespan_context
-    if not app_context.calendar_service:
-        return "Error: Google Calendar service not initialized."
-    try:
-        # calendar_tools.list_calendars は引数なしと仮定
-        return await list_calendars(app_context.calendar_service)
-    except Exception as e:
-        logger.error(f"Error in list_calendars_tool: {e}")
-        return f"Error executing list-calendars: {str(e)}"
+    """Return only the GOOGLE_CALENDAR_ID as the available calendar."""
+    import os
+    calendar_id = os.environ.get("GOOGLE_CALENDAR_ID")
+    if not calendar_id:
+        return "Error: GOOGLE_CALENDAR_ID environment variable not set."
+    return [{"id": calendar_id}]
 
 @mcp.tool(name="list-events") # MCP ツール名を指定
 async def list_events_tool(
